@@ -1,0 +1,48 @@
+{
+    "name": "homebridge-tasmota-outlet",
+    "version": "0.0.1",
+    "description": "Homebridge plugin (https://github.com/homebridge/homebridge) to control Tasmota devices.",
+    "license": "MIT",
+    "author": "grzegorz914",
+    "homepage": "https://github.com/grzegorz914/homebridge-tasmota-outlet#readme",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/grzegorz914/homebridge-tasmota-outlet.git"
+    },
+    "bugs": {
+        "url": "https://github.com/grzegorz914/homebridge-tasmota-outlet/issues"
+    },
+    "funding": {
+        "type": "paypal",
+        "url": "https://paypal.me/GrzegorzKaczor"
+    },
+    "main": "index.js",
+    "files": [
+        "index.js",
+        "config.schema.json",
+        "package.json",
+        "CHANGELOG.md",
+        "README.md",
+        "LICENSE"
+    ],
+    "engines": {
+        "node": ">=12.0.0",
+        "homebridge": ">=1.1.7"
+    },
+    "dependencies": {
+        "axios": "^0.21.1",
+        "request": "^2.88.2"
+    },
+    "keywords": [
+        "homebridge",
+        "homebridge-plugin",
+        "homebridge-tasmota-outlet",
+        "tasmota",
+        "tasmotaControl"
+    ],
+    "contributors": [],
+    "devDependencies": {},
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    }
+}

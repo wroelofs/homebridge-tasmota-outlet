@@ -1,0 +1,35 @@
+{
+    "bridge": {
+        "name": "Homebridge",
+        "username": "AA:BB:CC:DD:EE:FF",
+        "manufacturer": "homebridge.io",
+        "model": "homebridge",
+        "port": 9100,
+        "pin": "123-45-678"
+    },
+    "description": "HomeKit Bridge",
+    "ports": {
+        "start": 9101,
+        "end": 9150,
+        "comment": "In this section set the port for Homebridge accessories."
+    },
+    "accessories": [],
+    "platforms": [
+        {
+            "platform": "tasmotaOutlet",
+            "devices": [
+                {
+                    "name": "Gniazdo",
+                    "host": "192.168.1.60",
+                    "user": "user",
+                    "passwd": "passwd",
+                    "refreshInterval": 10,
+                    "manufacturer": "Manufacturer",
+                    "modelName": "Model",
+                    "serialNumber": "Serial Number",
+                    "firmwareRevision": "Firmware Revision"
+                }
+            ]
+        }
+    ]
+}
