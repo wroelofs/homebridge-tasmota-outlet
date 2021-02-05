@@ -22,14 +22,14 @@
             "host": {
               "title": "IP Address",
               "type": "string",
-              "default": "192.168.1.60",
+              "default": "192.168.1.61",
               "required": true,
               "format": "hostname"
             },
             "user": {
               "title": "User",
               "type": "string",
-              "default": "user",
+              "default": "admin",
               "required": true
             },
             "passwd": {
