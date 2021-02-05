@@ -86,7 +86,7 @@ class tasmotaDevice {
     this.relayState = false;
     this.prefDir = path.join(api.user.storagePath(), 'tasmota');
     this.auth_url = '?user=' + this.user + '&password=' + this.passwd;
-    this.url = 'http://' + this.host + '/cm?' + this.auth_url + '&cmnd='
+    this.url = 'http://' + this.host + '/cm' + this.auth_url + '&cmnd='
 
     //check if prefs directory ends with a /, if not then add it
     if (this.prefDir.endsWith('/') === false) {
@@ -143,10 +143,10 @@ class tasmotaDevice {
         me.checkDeviceState = false;
         me.checkDeviceInfo = true;
       }
-      me.log.info('Device %s, get device status data: %s', me.name, body);
+      me.log.debug('Device %s, get device status data: %s', me.name, body);
       var data = JSON.parse(body);
       if (data !== 'undefined') {
-        let powerState = data.power;
+        let powerState = (data.power == 'ON');
         if (me.tasmotaService) {
           me.tasmotaService.updateCharacteristic(Characteristic.On, powerState);
           me.log.debug('Device: %s, state: %s', me.name, powerState ? 'ON' : 'OFF');
