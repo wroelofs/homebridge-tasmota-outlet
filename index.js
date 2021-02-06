@@ -6,8 +6,8 @@ const fs = require('fs');
 const path = require('path');
 
 const POWER_STATE = 'Power';
-const POWERON = '%20On';
-const POWEROFF = '%20Off';
+const POWERON = 'Power%201';
+const POWEROFF = 'Power%200';
 
 const PLUGIN_NAME = 'homebridge-tasmota-outlet';
 const PLATFORM_NAME = 'tasmotaOutlet';
