@@ -142,9 +142,9 @@ class tasmotaDevice {
         me.log.debug('Device %s, get device status data: %s', me.name, body);
         var data = JSON.parse(body);
         if (data !== 'undefined') {
-          let powerState = (data.power === ON);
+          let powerState = (data['POWER'] === 'ON') ? 1 : 0;
           if (me.tasmotaService) {
-            me.tasmotaService.updateCharacteristic(Characteristic.On, OutletInUse);
+            me.tasmotaService.updateCharacteristic(Characteristic.OutletInUse, powerState);
             me.log.debug('Device: %s, state: %s', me.name, powerState ? 'ON' : 'OFF');
           }
           me.powerState = powerState;
