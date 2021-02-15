@@ -1,7 +1,6 @@
 'use strict';
 
 const request = require('request');
-const axios = require('axios').default;
 const fs = require('fs');
 const path = require('path');
 
@@ -72,6 +71,7 @@ class tasmotaDevice {
     this.user = config.user;
     this.passwd = config.passwd;
     this.refreshInterval = config.refreshInterval || 10;
+    this.disableLogInfo = config.disableLogInfo;
 
     //get Device info
     this.manufacturer = config.manufacturer || 'Gosund';
@@ -120,7 +120,7 @@ class tasmotaDevice {
   async getDeviceInfo() {
     var me = this;
     try {
-      me.log.info('Device: %s, state: Online.', me.name);
+      me.log('Device: %s, state: Online.', me.name);
       me.log('-------- %s --------', me.name);
       me.log('Manufacturer: %s', me.manufacturer);
       me.log('Model: %s', me.modelName);
@@ -149,19 +149,19 @@ class tasmotaDevice {
             me.log.debug('Device: %s, state: %s', me.name, powerState ? 'ON' : 'OFF');
           }
           me.powerState = powerState;
-          me.deviceDataOK = true;
         }
       });
       me.checkDeviceState = true;
 
-      //start prepare accessory
-      if (me.startPrepareAccessory) {
-        me.prepareAccessory();
-      }
     } catch (error) {
       me.log.error('Device: %s, update status error: %s, state: Offline', me.name, error);
       me.checkDeviceState = false;
       me.checkDeviceInfo = true;
+    }
+
+    //start prepare accessory
+    if (me.startPrepareAccessory) {
+      me.prepareAccessory();
     }
   }
 
@@ -175,8 +175,6 @@ class tasmotaDevice {
 
     //Prepare information service
     this.log.debug('prepareInformationService');
-    this.getDeviceInfo();
-
     const manufacturer = this.manufacturer;
     const modelName = this.modelName;
     const serialNumber = this.serialNumber;
@@ -195,28 +193,32 @@ class tasmotaDevice {
 
     //Prepare service 
     this.log.debug('preparetasmotaService');
-    if (this.deviceDataOK) {
-      this.tasmotaService = new Service.Outlet(accessoryName, 'tasmotaService');
-      this.tasmotaService.getCharacteristic(Characteristic.On)
-        .on('get', (callback) => {
-          let state = this.powerState;
-          this.log.info('Device: %s, state: %s', accessoryName, state ? 'ON' : 'OFF');
-          callback(null, state);
-        })
-        .on('set', (value, callback) => {
-          let state = value ? POWERON : POWEROFF;
-          request(this.url + state);
-          this.log.info('Device: %s, state: %s', accessoryName, state ? 'ON' : 'OFF');
-          callback(null);
-        });
-      this.tasmotaService.getCharacteristic(Characteristic.OutletInUse)
-        .on('get', (callback) => {
-          let state = this.powerState;
-          this.log.info('Device: %s, in use: %s', accessoryName, state ? 'YES' : 'NO');
-          callback(null, state);
-        });
-      accessory.addService(this.tasmotaService);
-    }
+    this.tasmotaService = new Service.Outlet(accessoryName, 'tasmotaService');
+    this.tasmotaService.getCharacteristic(Characteristic.On)
+      .on('get', (callback) => {
+        let state = this.powerState;
+        if (!this.disableLogInfo) {
+          this.log('Device: %s, get state: %s', accessoryName, state ? 'ON' : 'OFF');
+        }
+        callback(null, state);
+      })
+      .on('set', (value, callback) => {
+        let state = value ? POWERON : POWEROFF;
+        request(this.url + state);
+        if (!this.disableLogInfo) {
+          this.log('Device: %s, set state: %s', accessoryName, value ? 'ON' : 'OFF');
+        }
+        callback(null);
+      });
+    this.tasmotaService.getCharacteristic(Characteristic.OutletInUse)
+      .on('get', (callback) => {
+        let state = this.powerState;
+        if (!this.disableLogInfo) {
+          this.log('Device: %s, in use: %s', accessoryName, state ? 'YES' : 'NO');
+        }
+        callback(null, state);
+      });
+    accessory.addService(this.tasmotaService);
 
     this.startPrepareAccessory = false;
     this.log.debug('Device: %s %s, publishExternalAccessories.', this.host, accessoryName);

@@ -46,6 +46,13 @@
               "maximum": 3600,
               "required": true
             },
+            "disableLogInfo": {
+              "title": "Disable log info",
+              "type": "boolean",
+              "default": false,
+              "required": false,
+              "description": "This disable log info, all values and state will not be displayed in Homebridge log console."
+            },
             "manufacturer": {
               "name": "Manufacturer",
               "type": "string",
@@ -96,6 +103,7 @@
           "items": [
             "devices[].user",
             "devices[].passwd",
+            "devices[].disableLogInfo",
             "devices[].refreshInterval"
           ]
         },
