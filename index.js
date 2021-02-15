@@ -70,7 +70,7 @@ class tasmotaDevice {
     this.host = config.host;
     this.user = config.user;
     this.passwd = config.passwd;
-    this.refreshInterval = config.refreshInterval || 10;
+    this.refreshInterval = config.refreshInterval || 5;
     this.disableLogInfo = config.disableLogInfo;
 
     //get Device info
