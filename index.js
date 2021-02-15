@@ -82,6 +82,7 @@ class tasmotaDevice {
     //setup variables
     this.checkDeviceInfo = false;
     this.checkDeviceState = false;
+    this.startPrepareAccessory = true;
     this.deviceDataOK = false;
     this.powerState = false;
     this.prefDir = path.join(api.user.storagePath(), 'tasmota');
@@ -150,12 +151,13 @@ class tasmotaDevice {
           me.powerState = powerState;
           me.deviceDataOK = true;
         }
-
-        if (!me.checkDeviceState) {
-          me.prepareAccessory();
-        }
-        me.checkDeviceState = true;
       });
+      me.checkDeviceState = true;
+
+      //start prepare accessory
+      if (me.startPrepareAccessory) {
+        me.prepareAccessory();
+      }
     } catch (error) {
       me.log.error('Device: %s, update status error: %s, state: Offline', me.name, error);
       me.checkDeviceState = false;
@@ -169,61 +171,55 @@ class tasmotaDevice {
     const accessoryName = this.name;
     const accessoryUUID = UUID.generate(accessoryName);
     const accessoryCategory = Categories.OTHER;
-    this.accessory = new Accessory(accessoryName, accessoryUUID, accessoryCategory);
+    const accessory = new Accessory(accessoryName, accessoryUUID, accessoryCategory);
 
-    this.prepareInformationService();
-    this.preparetasmotaService();
-
-    this.log.debug('Device: %s %s, publishExternalAccessories.', this.host, accessoryName);
-    this.api.publishExternalAccessories(PLUGIN_NAME, [this.accessory]);
-  }
-
-  //Prepare information service
-  prepareInformationService() {
+    //Prepare information service
     this.log.debug('prepareInformationService');
     this.getDeviceInfo();
 
-    let manufacturer = this.manufacturer;
-    let modelName = this.modelName;
-    let serialNumber = this.serialNumber;
-    let firmwareRevision = this.firmwareRevision;
+    const manufacturer = this.manufacturer;
+    const modelName = this.modelName;
+    const serialNumber = this.serialNumber;
+    const firmwareRevision = this.firmwareRevision;
 
-    this.accessory.removeService(this.accessory.getService(Service.AccessoryInformation));
+    accessory.removeService(accessory.getService(Service.AccessoryInformation));
     const informationService = new Service.AccessoryInformation();
     informationService
-      .setCharacteristic(Characteristic.Name, this.name)
+      .setCharacteristic(Characteristic.Name, accessoryName)
       .setCharacteristic(Characteristic.Manufacturer, manufacturer)
       .setCharacteristic(Characteristic.Model, modelName)
       .setCharacteristic(Characteristic.SerialNumber, serialNumber)
       .setCharacteristic(Characteristic.FirmwareRevision, firmwareRevision);
 
-    this.accessory.addService(informationService);
-  }
+    accessory.addService(informationService);
 
-  //Prepare service 
-  preparetasmotaService() {
+    //Prepare service 
     this.log.debug('preparetasmotaService');
     if (this.deviceDataOK) {
-      this.tasmotaService = new Service.Outlet(this.name, 'tasmotaService');
+      this.tasmotaService = new Service.Outlet(accessoryName, 'tasmotaService');
       this.tasmotaService.getCharacteristic(Characteristic.On)
         .on('get', (callback) => {
           let state = this.powerState;
-          this.log.info('Device: %s, state: %s', this.name, state ? 'ON' : 'OFF');
+          this.log.info('Device: %s, state: %s', accessoryName, state ? 'ON' : 'OFF');
           callback(null, state);
         })
         .on('set', (value, callback) => {
           let state = value ? POWERON : POWEROFF;
           request(this.url + state);
-          this.log.info('Device: %s, state: %s', this.name, state ? 'ON' : 'OFF');
+          this.log.info('Device: %s, state: %s', accessoryName, state ? 'ON' : 'OFF');
           callback(null);
         });
       this.tasmotaService.getCharacteristic(Characteristic.OutletInUse)
         .on('get', (callback) => {
           let state = this.powerState;
-          this.log.info('Device: %s, in use: %s', this.name, state ? 'YES' : 'NO');
+          this.log.info('Device: %s, in use: %s', accessoryName, state ? 'YES' : 'NO');
           callback(null, state);
         });
-      this.accessory.addService(this.tasmotaService);
+      accessory.addService(this.tasmotaService);
     }
+
+    this.startPrepareAccessory = false;
+    this.log.debug('Device: %s %s, publishExternalAccessories.', this.host, accessoryName);
+    this.api.publishExternalAccessories(PLUGIN_NAME, [accessory]);
   }
 }
