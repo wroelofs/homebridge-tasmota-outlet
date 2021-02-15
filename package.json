@@ -1,47 +1,23 @@
 {
-  "_from": "homebridge-tasmota-outlet@latest",
-  "_id": "homebridge-tasmota-outlet@0.1.0",
-  "_inBundle": false,
-  "_integrity": "sha512-cEv1TJu7ljmTsrMoPhefMJEM7escFe9Iz3/CYRpDIShnrm84/jRmB6SUgg+v3c8RJaKgWDpmPYYl/rhB0YV8Gg==",
-  "_location": "/homebridge-tasmota-outlet",
-  "_phantomChildren": {},
-  "_requested": {
-    "type": "tag",
-    "registry": true,
-    "raw": "homebridge-tasmota-outlet@latest",
-    "name": "homebridge-tasmota-outlet",
-    "escapedName": "homebridge-tasmota-outlet",
-    "rawSpec": "latest",
-    "saveSpec": null,
-    "fetchSpec": "latest"
-  },
-  "_requiredBy": [
-    "#USER"
-  ],
-  "_resolved": "https://registry.npmjs.org/homebridge-tasmota-outlet/-/homebridge-tasmota-outlet-0.1.0.tgz",
-  "_shasum": "bc776f185b985b3f598c761a176d83350764c5af",
-  "_spec": "homebridge-tasmota-outlet@latest",
-  "_where": "/usr",
-  "author": {
-    "name": "grzegorz914"
+  "displayName": "Tasmota Outlet",
+  "name": "homebridge-tasmota-outlet",
+  "version": "0.2.0",
+  "description": "Homebridge plugin (https://github.com/homebridge/homebridge) to control Tasmota outlet.",
+  "license": "MIT",
+  "author": "grzegorz914",
+  "homepage": "https://github.com/grzegorz914/homebridge-tasmota-outlet#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/grzegorz914/homebridge-tasmota-outlet.git"
   },
   "bugs": {
     "url": "https://github.com/grzegorz914/homebridge-tasmota-outlet/issues"
   },
-  "bundleDependencies": false,
-  "contributors": [],
-  "dependencies": {
-    "axios": "^0.21.1",
-    "request": "^2.88.2"
+  "funding": {
+    "type": "paypal",
+    "url": "https://paypal.me/GrzegorzKaczor"
   },
-  "deprecated": false,
-  "description": "Homebridge plugin (https://github.com/homebridge/homebridge) to control Tasmota devices.",
-  "devDependencies": {},
-  "displayName": "Tasmota control",
-  "engines": {
-    "homebridge": ">=1.1.7",
-    "node": ">=12.0.0"
-  },
+  "main": "index.js",
   "files": [
     "index.js",
     "config.schema.json",
@@ -50,11 +26,13 @@
     "README.md",
     "LICENSE"
   ],
-  "funding": {
-    "type": "paypal",
-    "url": "https://paypal.me/GrzegorzKaczor"
+  "engines": {
+    "node": ">=12.0.0",
+    "homebridge": ">=1.1.7"
   },
-  "homepage": "https://github.com/grzegorz914/homebridge-tasmota-outlet#readme",
+  "dependencies": {
+    "axios": "^0.21.1"
+  },
   "keywords": [
     "homebridge",
     "homebridge-plugin",
@@ -62,15 +40,9 @@
     "tasmota",
     "tasmotaControl"
   ],
-  "license": "MIT",
-  "main": "index.js",
-  "name": "homebridge-tasmota-outlet",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/grzegorz914/homebridge-tasmota-outlet.git"
-  },
+  "contributors": [],
+  "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "version": "0.1.0"
+  }
 }

@@ -42,6 +42,7 @@
               "title": "Refresh interval (sec)",
               "type": "integer",
               "default": 10,
+              "minimum": 0,
               "maximum": 3600,
               "required": true
             },
@@ -86,7 +87,6 @@
       "items": [
         "devices[].name",
         "devices[].host",
-        "devices[].refreshInterval",
         {
           "key": "devices[]",
           "type": "section",
@@ -95,7 +95,8 @@
           "expanded": false,
           "items": [
             "devices[].user",
-            "devices[].passwd"
+            "devices[].passwd",
+            "devices[].refreshInterval"
           ]
         },
         {
