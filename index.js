@@ -203,10 +203,10 @@ class tasmotaDevice {
         return state;
       })
       .onSet(async (state) => {
-        let state = value ? POWERON : POWEROFF;
+        state = state ? POWERON : POWEROFF;
         request(this.url + state);
         if (!this.disableLogInfo) {
-          this.log('Device: %s, set state: %s', accessoryName, value ? 'ON' : 'OFF');
+          this.log('Device: %s, set state: %s', accessoryName, state ? 'ON' : 'OFF');
         }
       });
     this.tasmotaService.getCharacteristic(Characteristic.OutletInUse)
