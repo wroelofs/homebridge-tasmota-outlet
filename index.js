@@ -195,28 +195,27 @@ class tasmotaDevice {
     this.log.debug('preparetasmotaService');
     this.tasmotaService = new Service.Outlet(accessoryName, 'tasmotaService');
     this.tasmotaService.getCharacteristic(Characteristic.On)
-      .on('get', (callback) => {
+      .onGet(async () => {
         let state = this.powerState;
         if (!this.disableLogInfo) {
           this.log('Device: %s, get state: %s', accessoryName, state ? 'ON' : 'OFF');
         }
-        callback(null, state);
+        return state;
       })
-      .on('set', (value, callback) => {
+      .onSet(async (state) => {
         let state = value ? POWERON : POWEROFF;
         request(this.url + state);
         if (!this.disableLogInfo) {
           this.log('Device: %s, set state: %s', accessoryName, value ? 'ON' : 'OFF');
         }
-        callback(null);
       });
     this.tasmotaService.getCharacteristic(Characteristic.OutletInUse)
-      .on('get', (callback) => {
+      .onGet(async () => {
         let state = this.powerState;
         if (!this.disableLogInfo) {
           this.log('Device: %s, in use: %s', accessoryName, state ? 'YES' : 'NO');
         }
-        callback(null, state);
+        return state;
       });
     accessory.addService(this.tasmotaService);
 
