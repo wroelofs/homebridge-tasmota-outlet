@@ -37,7 +37,7 @@ class tasmotaPlatform {
     this.api.on('didFinishLaunching', () => {
       this.log.debug('didFinishLaunching');
       for (let i = 0; i < this.devices.length; i++) {
-        let deviceName = this.devices[i];
+        const deviceName = this.devices[i];
         if (!deviceName.name) {
           this.log.warn('Device Name Missing');
         } else {
@@ -83,7 +83,6 @@ class tasmotaDevice {
     this.checkDeviceInfo = false;
     this.checkDeviceState = false;
     this.startPrepareAccessory = true;
-    this.deviceDataOK = false;
     this.powerState = false;
     this.prefDir = path.join(api.user.storagePath(), 'tasmota');
     this.auth_url = '?user=' + this.user + '&password=' + this.passwd;
@@ -93,16 +92,9 @@ class tasmotaDevice {
     if (this.prefDir.endsWith('/') === false) {
       this.prefDir = this.prefDir + '/';
     }
-
     //check if the directory exists, if not then create it
     if (fs.existsSync(this.prefDir) === false) {
-      fs.mkdir(this.prefDir, { recursive: false }, (error) => {
-        if (error) {
-          this.log.error('Device: %s , create directory: %s, error: %s', this.name, this.prefDir, error);
-        } else {
-          this.log.debug('Device: %s , create directory successful: %s', this.name, this.prefDir);
-        }
-      });
+      fsPromises.mkdir(this.prefDir);
     }
 
     //Check device state
@@ -118,50 +110,48 @@ class tasmotaDevice {
   }
 
   async getDeviceInfo() {
-    var me = this;
+    this.log.debug('Device: %s %s, requesting config information.', this.host, this.name);
     try {
-      me.log('Device: %s, state: Online.', me.name);
-      me.log('-------- %s --------', me.name);
-      me.log('Manufacturer: %s', me.manufacturer);
-      me.log('Model: %s', me.modelName);
-      me.log('Serialnr: %s', me.serialNumber);
-      me.log('Firmware: %s', me.firmwareRevision);
-      me.log('----------------------------------');
+      this.log('Device: %s, state: Online.', this.name);
+      this.log('-------- %s --------', this.name);
+      this.log('Manufacturer: %s', this.manufacturer);
+      this.log('Model: %s', this.modelName);
+      this.log('Serialnr: %s', this.serialNumber);
+      this.log('Firmware: %s', this.firmwareRevision);
+      this.log('----------------------------------');
 
-      me.checkDeviceInfo = false;
-      me.updateDeviceState();
+      this.checkDeviceInfo = false;
+      this.updateDeviceState();
     } catch (error) {
-      me.log.error('Device: %s, getDeviceInfo error: %s', me.name, error);
-      me.checkDeviceInfo = true;
+      this.log.error('Device: %s %s, Device Info eror: %s, state: Offline, trying to reconnect', this.host, this.name, error);
+      this.checkDeviceInfo = true;
     }
   }
 
   updateDeviceState() {
-    var me = this;
+    this.log.debug('Device: %s %s, requesting Device information.', this.host, this.name);
     try {
-      request(me.url + POWER_STATE, function (error, response, body) {
-        me.log.debug('Device %s, get device status data: %s', me.name, body);
-        var data = JSON.parse(body);
+      request(this.url + POWER_STATE, function (error, response, body) {
+        const data = JSON.parse(body);
         if (data !== undefined) {
-          let powerState = (data['POWER'] === 'ON') ? 1 : 0;
-          if (me.tasmotaService) {
-            me.tasmotaService.updateCharacteristic(Characteristic.OutletInUse, powerState);
-            me.log.debug('Device: %s, state: %s', me.name, powerState ? 'ON' : 'OFF');
+          const powerState = (data['POWER'] === 'ON') ? 1 : 0;
+          if (this.tasmotaService) {
+            this.tasmotaService.updateCharacteristic(Characteristic.OutletInUse, powerState);
+            this.log.debug('Device: %s, state: %s', this.name, powerState ? 'ON' : 'OFF');
           }
-          me.powerState = powerState;
+          this.powerState = powerState;
         }
       });
-      me.checkDeviceState = true;
+      this.checkDeviceState = true;
 
+      //start prepare accessory
+      if (this.startPrepareAccessory) {
+        this.prepareAccessory();
+      }
     } catch (error) {
-      me.log.error('Device: %s, update status error: %s, state: Offline', me.name, error);
-      me.checkDeviceState = false;
-      me.checkDeviceInfo = true;
-    }
-
-    //start prepare accessory
-    if (me.startPrepareAccessory) {
-      me.prepareAccessory();
+      this.log.error('Device: %s %s, update Device state error: %s, state: Offline', this.host, this.name, error);
+      this.checkDeviceState = false;
+      this.checkDeviceInfo = true;
     }
   }
 
@@ -196,7 +186,7 @@ class tasmotaDevice {
     this.tasmotaService = new Service.Outlet(accessoryName, 'tasmotaService');
     this.tasmotaService.getCharacteristic(Characteristic.On)
       .onGet(async () => {
-        let state = this.powerState;
+        const state = this.powerState;
         if (!this.disableLogInfo) {
           this.log('Device: %s, get state: %s', accessoryName, state ? 'ON' : 'OFF');
         }
@@ -211,7 +201,7 @@ class tasmotaDevice {
       });
     this.tasmotaService.getCharacteristic(Characteristic.OutletInUse)
       .onGet(async () => {
-        let state = this.powerState;
+        const state = this.powerState;
         if (!this.disableLogInfo) {
           this.log('Device: %s, in use: %s', accessoryName, state ? 'YES' : 'NO');
         }
