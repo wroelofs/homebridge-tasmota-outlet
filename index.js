@@ -1,6 +1,6 @@
 'use strict';
 
-const request = require('request');
+const axios = require('axios');
 const fs = require('fs');
 const path = require('path');
 
@@ -101,7 +101,8 @@ class tasmotaDevice {
     setInterval(function () {
       if (this.checkDeviceInfo) {
         this.getDeviceInfo();
-      } else if (!this.checkDeviceInfo && this.checkDeviceState) {
+      }
+      if (this.checkDeviceState) {
         this.updateDeviceState();
       }
     }.bind(this), this.refreshInterval * 1000);
@@ -112,12 +113,15 @@ class tasmotaDevice {
   async getDeviceInfo() {
     this.log.debug('Device: %s %s, requesting config information.', this.host, this.name);
     try {
+      const response = await axios.request(this.url + POWER_STATE);
+      const powerState = (response.data['POWER'] === 'ON');
       this.log('Device: %s, state: Online.', this.name);
       this.log('-------- %s --------', this.name);
       this.log('Manufacturer: %s', this.manufacturer);
       this.log('Model: %s', this.modelName);
       this.log('Serialnr: %s', this.serialNumber);
       this.log('Firmware: %s', this.firmwareRevision);
+      this.log('State: %s', powerState ? 'ON' : 'OFF');
       this.log('----------------------------------');
 
       this.checkDeviceInfo = false;
@@ -128,20 +132,16 @@ class tasmotaDevice {
     }
   }
 
-  updateDeviceState() {
+  async updateDeviceState() {
     this.log.debug('Device: %s %s, requesting Device information.', this.host, this.name);
     try {
-      request(this.url + POWER_STATE, function (error, response, body) {
-        const data = JSON.parse(body);
-        if (data !== undefined) {
-          const powerState = (data['POWER'] === 'ON') ? 1 : 0;
-          if (this.tasmotaService) {
-            this.tasmotaService.updateCharacteristic(Characteristic.OutletInUse, powerState);
-            this.log.debug('Device: %s, state: %s', this.name, powerState ? 'ON' : 'OFF');
-          }
-          this.powerState = powerState;
-        }
-      });
+      const response = await axios.request(this.url + POWER_STATE);
+      const powerState = (response.data['POWER'] === 'ON');
+      if (this.tasmotaService) {
+        this.tasmotaService.updateCharacteristic(Characteristic.OutletInUse, powerState);
+        this.log.debug('Device: %s, state: %s', this.name, powerState ? 'ON' : 'OFF');
+      }
+      this.powerState = powerState;
       this.checkDeviceState = true;
 
       //start prepare accessory
@@ -194,7 +194,7 @@ class tasmotaDevice {
       })
       .onSet(async (state) => {
         state = state ? POWERON : POWEROFF;
-        request(this.url + state);
+        axios.request(this.url + state);
         if (!this.disableLogInfo) {
           this.log('Device: %s, set state: %s', accessoryName, state ? 'ON' : 'OFF');
         }
