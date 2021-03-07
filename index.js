@@ -138,7 +138,8 @@ class tasmotaDevice {
       const response = await axios.request(this.url + POWER_STATE);
       const powerState = (response.data['POWER'] === 'ON');
       if (this.tasmotaService) {
-        this.tasmotaService.updateCharacteristic(Characteristic.OutletInUse, powerState);
+        this.tasmotaService
+          .updateCharacteristic(Characteristic.OutletInUse, powerState);
         this.log.debug('Device: %s, state: %s', this.name, powerState ? 'ON' : 'OFF');
       }
       this.powerState = powerState;
