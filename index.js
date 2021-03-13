@@ -111,7 +111,7 @@ class tasmotaDevice {
   }
 
   async getDeviceInfo() {
-    this.log.debug('Device: %s %s, requesting config information.', this.host, this.name);
+    this.log.debug('Device: %s %s, requesting Device Info.', this.host, this.name);
     try {
       const response = await axios.request(this.url + POWER_STATE);
       const powerState = (response.data['POWER'] === 'ON');
@@ -133,14 +133,14 @@ class tasmotaDevice {
   }
 
   async updateDeviceState() {
-    this.log.debug('Device: %s %s, requesting Device information.', this.host, this.name);
+    this.log.debug('Device: %s %s, requesting Device state.', this.host, this.name);
     try {
       const response = await axios.request(this.url + POWER_STATE);
+      this.log.debug('Device: %s %s, debug response: %s', this.host, this.name, response.data);
       const powerState = (response.data['POWER'] === 'ON');
       if (this.tasmotaService) {
         this.tasmotaService
           .updateCharacteristic(Characteristic.OutletInUse, powerState);
-        this.log.debug('Device: %s, state: %s', this.name, powerState ? 'ON' : 'OFF');
       }
       this.powerState = powerState;
       this.checkDeviceState = true;
@@ -183,7 +183,7 @@ class tasmotaDevice {
     accessory.addService(informationService);
 
     //Prepare service 
-    this.log.debug('preparetasmotaService');
+    this.log.debug('prepareTasmotaService');
     this.tasmotaService = new Service.Outlet(accessoryName, 'tasmotaService');
     this.tasmotaService.getCharacteristic(Characteristic.On)
       .onGet(async () => {
