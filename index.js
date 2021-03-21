@@ -80,7 +80,7 @@ class tasmotaDevice {
     this.firmwareRevision = config.firmwareRevision || 'Firmware Revision';
 
     //setup variables
-    this.checkDeviceInfo = false;
+    this.checkDeviceInfo = true;
     this.checkDeviceState = false;
     this.startPrepareAccessory = true;
     this.powerState = false;
@@ -107,7 +107,10 @@ class tasmotaDevice {
       }
     }.bind(this), this.refreshInterval * 1000);
 
-    this.getDeviceInfo()
+    //start prepare accessory
+    if (this.startPrepareAccessory) {
+      this.prepareAccessory();
+    }
   }
 
   async getDeviceInfo() {
@@ -137,18 +140,14 @@ class tasmotaDevice {
     try {
       const response = await axios.request(this.url + POWER_STATE);
       this.log.debug('Device: %s %s, debug response: %s', this.host, this.name, response.data);
-      const powerState = (response.data['POWER'] === 'ON');
+      const powerState = (response.data['POWER'] !== undefined) ? (response.data['POWER'] === 'ON') : false;
       if (this.tasmotaService) {
         this.tasmotaService
           .updateCharacteristic(Characteristic.OutletInUse, powerState);
       }
       this.powerState = powerState;
-      this.checkDeviceState = true;
 
-      //start prepare accessory
-      if (this.startPrepareAccessory) {
-        this.prepareAccessory();
-      }
+      this.checkDeviceState = true;
     } catch (error) {
       this.log.error('Device: %s %s, update Device state error: %s, state: Offline', this.host, this.name, error);
       this.checkDeviceState = false;
