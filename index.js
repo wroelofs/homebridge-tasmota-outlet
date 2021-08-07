@@ -1,8 +1,8 @@
 'use strict';
 
-const axios = require('axios');
-const fs = require('fs');
 const path = require('path');
+const axios = require('axios').default;
+const fs = require('fs');
 
 const POWER_STATE = 'Power';
 const POWERON = 'Power%201';
@@ -89,11 +89,11 @@ class tasmotaDevice {
     this.url = 'http://' + this.host + '/cm' + this.auth_url + '&cmnd='
 
     //check if prefs directory ends with a /, if not then add it
-    if (this.prefDir.endsWith('/') === false) {
+    if (this.prefDir.endsWith('/') == false) {
       this.prefDir = this.prefDir + '/';
     }
     //check if the directory exists, if not then create it
-    if (fs.existsSync(this.prefDir) === false) {
+    if (fs.existsSync(this.prefDir) == false) {
       fsPromises.mkdir(this.prefDir);
     }
 
@@ -117,7 +117,7 @@ class tasmotaDevice {
     this.log.debug('Device: %s %s, requesting Device Info.', this.host, this.name);
     try {
       const response = await axios.request(this.url + POWER_STATE);
-      const powerState = (response.data['POWER'] === 'ON');
+      const powerState = (response.data['POWER'] == 'ON');
       this.log('Device: %s, state: Online.', this.name);
       this.log('-------- %s --------', this.name);
       this.log('Manufacturer: %s', this.manufacturer);
@@ -140,7 +140,7 @@ class tasmotaDevice {
     try {
       const response = await axios.request(this.url + POWER_STATE);
       this.log.debug('Device: %s %s, debug response: %s', this.host, this.name, response.data);
-      const powerState = (response.data['POWER'] !== undefined) ? (response.data['POWER'] === 'ON') : false;
+      const powerState = (response.data['POWER'] != undefined) ? (response.data['POWER'] == 'ON') : false;
       if (this.tasmotaService) {
         this.tasmotaService
           .updateCharacteristic(Characteristic.OutletInUse, powerState);
