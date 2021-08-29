@@ -30,31 +30,31 @@ class tasmotaPlatform {
       return;
     }
     this.log = log;
-    this.config = config;
     this.api = api;
     this.devices = config.devices || [];
+    this.accessories = [];
 
     this.api.on('didFinishLaunching', () => {
       this.log.debug('didFinishLaunching');
       for (let i = 0; i < this.devices.length; i++) {
-        const deviceName = this.devices[i];
-        if (!deviceName.name) {
+        const device = this.devices[i];
+        if (!device.name) {
           this.log.warn('Device Name Missing');
         } else {
-          new tasmotaDevice(this.log, deviceName, this.api);
+          new tasmotaDevice(this.log, device, this.api);
         }
       }
     });
-
   }
 
-  configureAccessory(platformAccessory) {
+  configureAccessory(accessory) {
     this.log.debug('configurePlatformAccessory');
+    this.accessories.push(accessory);
   }
 
-  removeAccessory(platformAccessory) {
+  removeAccessory(accessory) {
     this.log.debug('removePlatformAccessory');
-    this.api.unregisterPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [platformAccessory]);
+    this.api.unregisterPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [accessory]);
   }
 }
 
@@ -62,8 +62,6 @@ class tasmotaDevice {
   constructor(log, config, api) {
     this.log = log;
     this.api = api;
-    this.config = config;
-
 
     //device configuration
     this.name = config.name;
