@@ -86,10 +86,6 @@ class tasmotaDevice {
     this.auth_url = '?user=' + this.user + '&password=' + this.passwd;
     this.url = 'http://' + this.host + '/cm' + this.auth_url + '&cmnd='
 
-    //check if prefs directory ends with a /, if not then add it
-    if (this.prefDir.endsWith('/') == false) {
-      this.prefDir = this.prefDir + '/';
-    }
     //check if the directory exists, if not then create it
     if (fs.existsSync(this.prefDir) == false) {
       fsPromises.mkdir(this.prefDir);
