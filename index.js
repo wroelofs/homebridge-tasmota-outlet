@@ -3,6 +3,7 @@
 const path = require('path');
 const axios = require('axios').default;
 const fs = require('fs');
+const fsPromises = require('fs').promises;
 
 const POWER_STATE = 'Power';
 const POWERON = 'Power%201';
