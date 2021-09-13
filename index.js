@@ -1,7 +1,7 @@
 'use strict';
 
 const path = require('path');
-const axios = require('axios').default;
+const axios = require('axios');
 const fs = require('fs');
 const fsPromises = require('fs').promises;
 
@@ -84,8 +84,18 @@ class tasmotaDevice {
     this.startPrepareAccessory = true;
     this.powerState = false;
     this.prefDir = path.join(api.user.storagePath(), 'tasmota');
-    this.auth_url = '?user=' + this.user + '&password=' + this.passwd;
-    this.url = 'http://' + this.host + '/cm' + this.auth_url + '&cmnd='
+    this.url = 'http://' + this.host + '/cm?cmnd='
+
+    this.axiosInstance = axios.create({
+      method: 'GET',
+      baseURL: this.url,
+      timeout: 5000,
+      withCredentials: true,
+      auth: {
+        username: this.user,
+        password: this.passwd
+      },
+    });
 
     //check if the directory exists, if not then create it
     if (fs.existsSync(this.prefDir) == false) {
@@ -111,7 +121,7 @@ class tasmotaDevice {
   async getDeviceInfo() {
     this.log.debug('Device: %s %s, requesting Device Info.', this.host, this.name);
     try {
-      const response = await axios.request(this.url + POWER_STATE);
+      const response = await this.axiosInstance(POWER_STATE);
       const powerState = (response.data['POWER'] == 'ON');
       this.log('Device: %s, state: Online.', this.name);
       this.log('-------- %s --------', this.name);
@@ -133,7 +143,7 @@ class tasmotaDevice {
   async updateDeviceState() {
     this.log.debug('Device: %s %s, requesting Device state.', this.host, this.name);
     try {
-      const response = await axios.request(this.url + POWER_STATE);
+      const response = await this.axiosInstance(POWER_STATE);
       this.log.debug('Device: %s %s, debug response: %s', this.host, this.name, response.data);
       const powerState = (response.data['POWER'] != undefined) ? (response.data['POWER'] == 'ON') : false;
       if (this.tasmotaService) {
@@ -189,7 +199,7 @@ class tasmotaDevice {
       })
       .onSet(async (state) => {
         state = state ? POWERON : POWEROFF;
-        axios.request(this.url + state);
+        this.axiosInstance(state);
         if (!this.disableLogInfo) {
           this.log('Device: %s, set state: %s', accessoryName, state ? 'ON' : 'OFF');
         }
