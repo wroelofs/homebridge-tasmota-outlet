@@ -49,12 +49,12 @@ class tasmotaPlatform {
   }
 
   configureAccessory(accessory) {
-    this.log.debug('configurePlatformAccessory');
+    this.log.debug('configureAccessory');
     this.accessories.push(accessory);
   }
 
   removeAccessory(accessory) {
-    this.log.debug('removePlatformAccessory');
+    this.log.debug('removeAccessory');
     this.api.unregisterPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [accessory]);
   }
 }
