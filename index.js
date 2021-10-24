@@ -84,7 +84,7 @@ class tasmotaDevice {
     this.startPrepareAccessory = true;
     this.powerState = false;
     this.prefDir = path.join(api.user.storagePath(), 'tasmota');
-    this.url = 'http://' + this.host + '/cm?cmnd='
+    this.url = `http://${this.host}/cm?cmnd=`
 
     this.axiosInstance = axios.create({
       method: 'GET',
