@@ -84,17 +84,12 @@ class tasmotaDevice {
     this.startPrepareAccessory = true;
     this.powerState = false;
     this.prefDir = path.join(api.user.storagePath(), 'tasmota');
-    this.url = `http://${this.host}/cm?cmnd=`
+    this.url = `http://${this.host}/cm?user=${this.user}&password=${this.passwd}&cmnd=`
 
     this.axiosInstance = axios.create({
       method: 'GET',
       baseURL: this.url,
-      timeout: 5000,
-      withCredentials: true,
-      auth: {
-        username: this.user,
-        password: this.passwd
-      },
+      timeout: 5000
     });
 
     //check if the directory exists, if not then create it

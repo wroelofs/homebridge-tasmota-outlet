@@ -1,7 +1,7 @@
 {
   "displayName": "Tasmota Outlet",
   "name": "homebridge-tasmota-outlet",
-  "version": "0.3.29",
+  "version": "0.3.30",
   "description": "Homebridge plugin (https://github.com/homebridge/homebridge) to control Tasmota outlet.",
   "license": "MIT",
   "author": "grzegorz914",
